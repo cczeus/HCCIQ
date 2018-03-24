@@ -4,9 +4,47 @@ const MD5 = require("crypto-js/md5");
 const symptoms = require('./symptoms');
 const fs = require('fs');
 const { spawn } = require('child_process');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(bodyParser.json());
+
+mongoose.Promise = global.Promise;
+
+// MongoDB Connection
+mongoose.connect('mongodb://localhost:27017/hcciq', (error) => {
+  if (error) {
+    console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
+    throw error;
+  }
+});
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+var Schema = mongoose.Schema;
+var HCCSchema = new Schema({
+	  doctor: String,
+    timeOfVisit: Date,
+    patient: String,
+    imgURL: String,
+    cost: String,
+    note: String,
+    code: [{
+			code: String,
+			score: Number
+		}],
+    symptoms: [String],
+    diagnosis: [{
+      name: String,
+      probability: Number
+    }]
+});
+
+var HCC = mongoose.model('HCCModel', HCCSchema);
 
 getSymptoms();
 function getSymptoms() {
@@ -82,8 +120,8 @@ function extrapolateSymptoms(note) {
 						match = false;
 					}
 				});
-				if(match && ! arr.includes(symptom)) {
-					arr.push(symptom);
+				if(match && ! arr.includes(symptom.Name)) {
+					arr.push(symptom.Name);
 				}
 			} else {
 				var match = true;
@@ -92,8 +130,8 @@ function extrapolateSymptoms(note) {
 						match = false;
 					}
 				});
-				if(match && ! arr.includes(symptom)) {
-					arr.push(symptom);
+				if(match && ! arr.includes(symptom.Name)) {
+					arr.push(symptom.Name);
 				}
 			}
 		});
@@ -107,7 +145,7 @@ app.get('/', (req, res) => {
 
 app.get('/note', (req, res) => {
 	var symptomsArray = extrapolateSymptoms(req.body.note);
-	var diagnosis = null; // TODO: Generate diagnosis from API, should be an array of strings, each string is a diagnosis
+	var diagnosis = null; // TODO: Generate diagnosis from API, should be an array of objects of form {name: String, probability: Number}
 	fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
     if(err) {
         return console.log(err);
@@ -116,11 +154,39 @@ app.get('/note', (req, res) => {
 	const ls = spawn('java', ['YIKES_@MATT_MESERVE_NLP_FILENAME.java', '/tmp/java_nlp_input']);
 	var nlpData = [];
 	ls.stdout.on('data', (data) => {
+		data = data.split(',');
+		data = {
+			code: data[0],
+			score: data[1]
+		}
 		nlpData.push(data);
 	});
 	ls.on('close', () => {
-		res.send(JSON.stringify(nlpData));
+		cost = (Math.random() * 90000 + 10000).toFixed(2); // TODO: Actually generate a real cost
+		var obj = {
+			doctor: req.body.doctor,
+			timeOfVisit: Date.now(),
+			patient: req.body.patient,
+			imgURL: req.body.img,
+			cost: cost,
+			note: req.body.note,
+			code: nlpData,
+			symptoms: symptomsArray,
+			diagnosis: diagnosis
+		}
+		var h = new HCC(obj);
+		h.save((error) => {
+			if(error) res.send(error);
+      else res.send(obj);
+		});
+		res.send(JSON.stringify(obj));
 	});
+});
+
+app.get('/getRequests/:doctor', (req, res) => {
+	HCC.find({doctor: req.params.doctor}).sort({ timeOfVisit: -1 }).exec( (error, hccs) => {
+    res.send(hccs);
+  });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
