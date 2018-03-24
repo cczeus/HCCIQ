@@ -33,7 +33,7 @@ export default class DiagnosisChart extends React.Component {
 		console.log(data)
 	  	return (
 	    	<BarChart width={800} height={400} data={data}
-	            margin={{top: 5, right: 30, left: 20, bottom: 5}}>
+	            margin={{top: 5, right: 100, left: 0, bottom: 5}}>
 	       <XAxis dataKey="name" height={150}  />
 	       <YAxis />
 
@@ -45,8 +45,8 @@ export default class DiagnosisChart extends React.Component {
           		console.log(entry);
           		var color = '#4688F1';
           		const accuracy = entry.accuracy
-				if(accuracy <= 70)					color = MED;
-				else if(accuracy <= 50)				color = LOW;
+				if(accuracy <= 70 && accuracy > 40)	color = MED;
+				else if(accuracy <= 39)				color = LOW;
 
             	return <Cell key={index} fill={color} />;
             })
