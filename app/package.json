@@ -1,0 +1,26 @@
+{
+  "name": "hcc-seeker",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.1.1",
+    "express": "^4.16.2",
+    "concurrently": "^3.5.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "app": "cd app && npm start",
+    "server": "nodemon server.js",
+    "dev": "concurrently — kill-others-on-fail \"npm run server\" \"npm run app\"",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.1",
+    "nodemon": "^1.17.2"
+  },
+  "proxy": "http://localhost:5000/"
+}
