@@ -2,6 +2,8 @@ const express = require('express');
 const https = require('https');
 const MD5 = require("crypto-js/md5");
 const symptoms = require('./symptoms');
+const fs = require('fs');
+const { spawn } = require('child_process');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -101,6 +103,24 @@ function extrapolateSymptoms(note) {
 
 app.get('/', (req, res) => {
   
+});
+
+app.get('/note', (req, res) => {
+	var symptomsArray = extrapolateSymptoms(req.body.note);
+	var diagnosis = null; // TODO: Generate diagnosis from API, should be an array of strings, each string is a diagnosis
+	fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
+    if(err) {
+        return console.log(err);
+    }
+	});
+	const ls = spawn('java', ['YIKES_@MATT_MESERVE_NLP_FILENAME.java', '/tmp/java_nlp_input']);
+	var nlpData = [];
+	ls.stdout.on('data', (data) => {
+		nlpData.push(data);
+	});
+	ls.on('close', () => {
+		res.send(JSON.stringify(nlpData));
+	});
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
