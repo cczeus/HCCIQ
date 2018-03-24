@@ -1,6 +1,7 @@
 const express = require('express');
 const https = require('https');
 const MD5 = require("crypto-js/md5");
+const symptoms = require('./symptoms');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -66,6 +67,36 @@ function getToken() {
 	  console.error(e);
 	});
 	req.end();
+}
+
+function extrapolateSymptoms(note) {
+	arr = [];
+	note.split('.').forEach((sentence) => {
+		symptoms.forEach((symptom) => {
+			if('Words' in symptom) {
+				var match = true;
+				symptom.Words.split(' ').forEach((word) => {
+					if(! sentence.trim().toLowerCase().includes(word.toLowerCase())) {
+						match = false;
+					}
+				});
+				if(match && ! arr.includes(symptom)) {
+					arr.push(symptom);
+				}
+			} else {
+				var match = true;
+				symptom.Name.split(' ').forEach((word) => {
+					if(! sentence.trim().toLowerCase().includes(word.toLowerCase())) {
+						match = false;
+					}
+				});
+				if(match && ! arr.includes(symptom)) {
+					arr.push(symptom);
+				}
+			}
+		});
+	});
+	return arr;
 }
 
 app.get('/', (req, res) => {
