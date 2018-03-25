@@ -54,7 +54,7 @@ var HCC = mongoose.model('HCCModel', HCCSchema);
 function getDiagnosis(ids, callback) {
 	const options = {
 		hostname: 'sandbox-healthservice.priaid.ch',
-		path: '/diagnosis?token=' + token + '&language=en-gb&format=json',
+		path: '/diagnosis?symptoms=' + JSON.stringify(ids) + '&gender=male&year_of_birth=1988&token=' + token + '&language=en-gb&format=json',
 		method: 'GET'
 	};
 
@@ -149,9 +149,9 @@ function extrapolateSymptoms(note) {
 						match = false;
 					}
 				});
-				if(match && ! arr.includes(symptom.Name)) {
+				if(match && ! names.includes(symptom.Name)) {
 					names.push(symptom.Name);
-					ids.push(symptoms.ID);
+					ids.push(symptom.ID);
 					matches.push(newMatches);
 				}
 			} else {
@@ -163,9 +163,9 @@ function extrapolateSymptoms(note) {
 						match = false;
 					}
 				});
-				if(match && ! arr.includes(symptom.Name)) {
+				if(match && ! names.includes(symptom.Name)) {
 					names.push(symptom.Name);
-					ids.push(symptoms.ID);
+					ids.push(symptom.ID);
 					matches.push(newMatches);
 				}
 			}
@@ -183,7 +183,7 @@ function beerMeTheCodes(diagnoses) {
 				prob *= diagnosis.probability;
 			}
 		});
-		arr.push([diagnosis.name.toLowerCase(), prob]);
+		arr.push([code.code, prob]);
 	});
 	arr.sort((f, s) => {
 		return s[1] - f[1];
@@ -197,6 +197,9 @@ app.get('/', (req, res) => {
 
 app.post('/note', (req, res) => {
 	var symptoms = extrapolateSymptoms(req.body.note);
+	if(symptoms.length === 0) {
+		res.send("no symptoms found");
+	}
 	var symptomsArray = symptoms[0];
 	var diagnosis = [
 		{
@@ -209,11 +212,11 @@ app.post('/note', (req, res) => {
 		}
 	]; // TODO: Generate diagnosis from API, should be an array of objects of form {name: String, probability: Number}
 	getDiagnosis(symptoms[1], (diagnosis) => {
-		fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
-			if(err) {
-					return console.log(err);
-			}
-		});
+		// fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
+		// 	if(err) {
+		// 			return console.log(err);
+		// 	}
+		// });
 		// const ls = spawn('java', ['YIKES_@MATT_MESERVE_NLP_FILENAME.java', '/tmp/java_nlp_input']);
 		// var nlpData = []; // ONCE MATT'S CODE WORKS
 		// ls.stdout.on('data', (data) => {
@@ -226,7 +229,13 @@ app.post('/note', (req, res) => {
 		// });
 		// ls.on('close', () => {
 			cost = (Math.random() * 90000 + 10000).toFixed(2); // TODO: Actually generate a real cost
-			var nlpData = beerMeTheCodes(diagnosis);
+			var dg = diagnosis.map((dgs) => {
+				return {
+					name: dgs.Issue.ProfName,
+					score: dgs.Issue.Accuracy
+				}
+			});
+			var nlpData = beerMeTheCodes(dg);
 			var obj = {
 				doctor: req.body.doctor,
 				timeOfVisit: Date.now(),
@@ -242,7 +251,6 @@ app.post('/note', (req, res) => {
 			var h = new HCC(obj);
 			h.save((error) => {
 				if(error) res.send(error);
-				else res.send(obj);
 			});
 			res.send(obj);
 		//});
