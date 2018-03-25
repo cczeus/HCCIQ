@@ -18,9 +18,9 @@ export default class DiagnosisChart extends React.Component {
 		const diagnosis = this.props.diagnosis;
 		const data = [];
 		for(var i in diagnosis) {
-			console.log(diagnosis[i])
-			const accuracy = diagnosis[i].Issue.Accuracy;
-			const newData = {name: diagnosis[i].Issue.ProfName, accuracy};
+			// console.log(diagnosis[i])
+			const accuracy = diagnosis[i].probability
+			const newData = {name: diagnosis[i].name, accuracy};
 			
 
 			// if(accuracy >= 85)		newData.high = accuracy;
@@ -41,7 +41,7 @@ export default class DiagnosisChart extends React.Component {
 	      	<Bar dataKey="accuracy" fill={HIGH}>
        		{
           	data.map((entry, index) => {
-          		console.log(entry);
+          		// console.log(entry);
           		var color = '#4688F1';
           		const accuracy = entry.accuracy
 				if(accuracy <= 70 && accuracy > 40)	color = MED;
