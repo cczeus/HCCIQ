@@ -111,7 +111,8 @@ function getToken() {
 }
 
 function extrapolateSymptoms(note) {
-	arr = [];
+	names = [];
+	ids = [];
 	note.split('.').forEach((sentence) => {
 		symptoms.forEach((symptom) => {
 			if('Words' in symptom) {
@@ -122,7 +123,8 @@ function extrapolateSymptoms(note) {
 					}
 				});
 				if(match && ! arr.includes(symptom.Name)) {
-					arr.push(symptom.Name);
+					names.push(symptom.Name);
+					ids.push(symptoms.ID);
 				}
 			} else {
 				var match = true;
@@ -132,20 +134,22 @@ function extrapolateSymptoms(note) {
 					}
 				});
 				if(match && ! arr.includes(symptom.Name)) {
-					arr.push(symptom.Name);
+					names.push(symptom.Name);
+					ids.push(symptoms.ID);
 				}
 			}
 		});
 	});
-	return arr;
+	return [names, ids];
 }
 
 app.get('/', (req, res) => {
   
 });
 
-app.get('/note', (req, res) => {
-	var symptomsArray = extrapolateSymptoms(req.body.note);
+app.post('/note', (req, res) => {
+	var symptoms = extrapolateSymptoms(req.body.note);
+	var symptomsArray = symptoms[0];
 	var diagnosis = null; // TODO: Generate diagnosis from API, should be an array of objects of form {name: String, probability: Number}
 	fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
     if(err) {
