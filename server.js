@@ -34,7 +34,8 @@ var HCCSchema = new Schema({
 	  doctor: String,
     timeOfVisit: Date,
     patient: String,
-    imgURL: String,
+		imgURL: String,
+		matches: [String],
     cost: String,
     note: String,
     code: [{
@@ -136,11 +137,14 @@ function getToken() {
 function extrapolateSymptoms(note) {
 	names = [];
 	ids = [];
+	matches = [];
 	note.split('.').forEach((sentence) => {
 		symptoms.forEach((symptom) => {
 			if('Words' in symptom) {
 				var match = true;
+				var newMatches = [];
 				symptom.Words.split(' ').forEach((word) => {
+					newMatches.push(word);
 					if(! sentence.trim().toLowerCase().includes(word.toLowerCase())) {
 						match = false;
 					}
@@ -148,10 +152,13 @@ function extrapolateSymptoms(note) {
 				if(match && ! arr.includes(symptom.Name)) {
 					names.push(symptom.Name);
 					ids.push(symptoms.ID);
+					matches.push(newMatches);
 				}
 			} else {
 				var match = true;
+				var newMatches = [];
 				symptom.Name.split(' ').forEach((word) => {
+					newMatches.push(word);
 					if(! sentence.trim().toLowerCase().includes(word.toLowerCase())) {
 						match = false;
 					}
@@ -159,11 +166,12 @@ function extrapolateSymptoms(note) {
 				if(match && ! arr.includes(symptom.Name)) {
 					names.push(symptom.Name);
 					ids.push(symptoms.ID);
+					matches.push(newMatches);
 				}
 			}
 		});
 	});
-	return [names, ids];
+	return [names, ids, matches];
 }
 
 function beerMeTheCodes(diagnoses) {
@@ -224,6 +232,7 @@ app.post('/note', (req, res) => {
 				timeOfVisit: Date.now(),
 				patient: req.body.patient,
 				imgURL: req.body.img,
+				matches: symptoms[2],
 				cost: cost,
 				note: req.body.note,
 				code: nlpData,
