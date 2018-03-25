@@ -94,6 +94,7 @@ class Homepage extends React.Component {
                 notes.map((note, index) => {
                   const name = note.patient.split(' ');
                   return(
+                  <div style={{ margin: 10, padding: 0}}>
                   <Note 
                     key={index} 
                     firstName={name[0]} 
@@ -102,6 +103,7 @@ class Homepage extends React.Component {
                     note={note.note}
                     cost={note.cost}
                     timeOfVisit={note.timeOfVisit}/>
+                    </div>
                   )
               })
             }
