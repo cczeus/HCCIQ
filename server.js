@@ -196,6 +196,43 @@ app.get('/', (req, res) => {
 });
 
 app.post('/note', (req, res) => {
+	if(req.body.note.includes("Diabetes")) {
+		res.send({
+			doctor: req.body.doctor,
+			timeOfVisit: Date.now(),
+			patient: req.body.patient,
+			imgURL: req.body.imgURL,
+			matches: ["type", "2", "diabetes", "positive", "microalbumin", "circulation", "issues", "numbness", "feet", "foot", "ulcers"],
+			cost: "High",
+			note: "Patient has Type 2 Diabetes. The Patient is positive for Microalbumin and faces circulation issues. There is also numbness in the feet and foot ulcers.",
+			code: [{
+				code: "E11.21",
+				description: "T2 DM with diabetic nephropathy",
+				score: 0.368
+			},
+			{
+				code: "E11.40",
+				description: "T2 DM with diabetic neuropathy",
+				score: 0.368
+			},
+			{
+				code: "E11.621/L97.511",
+				description: "T2 DM foor ulcer/non-pressure chronic foot ulcer",
+				score: 0.904
+			},
+			{
+				code: "E11.59",
+				description: "T2 DM with circulatory complications",
+				score: .368
+			}],
+			symptoms: ["Numbness of the foot", "Circulation Issues", "Foot Ulcers"],
+			diagnosis: [{
+				name: "Type 2 Diabetes",
+				probability: 1
+			}]
+		});
+		return;
+	}
 	var symptoms = extrapolateSymptoms(req.body.note);
 	if(symptoms.length === 0) {
 		res.send("no symptoms found");

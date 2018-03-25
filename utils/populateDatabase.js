@@ -25,7 +25,8 @@ var HCCSchema = new Schema({
     cost: String,
     note: String,
     code: [{
-			code: String,
+      code: String,
+      description: String,
 			score: Number
 		}],
     symptoms: [String],
