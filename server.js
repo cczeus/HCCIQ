@@ -160,7 +160,7 @@ function extrapolateSymptoms(note) {
 				if(match && ! names.includes(symptom.Name)) {
 					names.push(symptom.Name);
 					ids.push(symptom.ID);
-					matches.concat(newMatches);
+					matches = matches.concat(newMatches);
 				}
 			} else {
 				var match = true;
@@ -174,7 +174,7 @@ function extrapolateSymptoms(note) {
 				if(match && ! names.includes(symptom.Name)) {
 					names.push(symptom.Name);
 					ids.push(symptom.ID);
-					matches.concat(newMatches);
+					matches = matches.concat(newMatches);
 				}
 			}
 		});
