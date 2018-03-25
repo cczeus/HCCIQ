@@ -33,7 +33,7 @@ class Homepage extends React.Component {
             <AngleDown style={{ alignSelf: 'center', fontSize: 21 }} />
           </div>
           <div style={{ flexDirection: 'row', display: 'flex', flex: 1 }}>   
-            <div style={{ flex: 0.35, borderRight: '2px solid #E0E0E0', paddingLeft: 20, paddingRight: 20 }}>
+            <div style={{ flex: 0.30, flexDirection: 'column', display: 'flex', borderRight: '2px solid #E0E0E0', paddingLeft: 20, paddingRight: 20 }}>
               <div style={{ flexDirection: 'row', display: 'flex' }}>
                 <p style={{ color: '#757575', fontWeight: 'light', fontSize: 21, flex: 1 }}>Your Notes</p>
                 <div style={{ color: '#4688F1', fontWeight: 'light', fontSize: 18, display: 'flex', flexDirection: 'row' }}>
@@ -42,9 +42,14 @@ class Homepage extends React.Component {
                 <div>
                 </div>
               </div>
+              <Note />
+              <Note />
+              <Note />
+              <Note />
+              <Note />
             </div>
-            <div style={{ flex: 0.65, display: 'flex', flexDirection: 'column', overflowY: 'scroll', overflowX: 'hidden' }}>
-              <div style={{ display: 'flex', flex: 1, flexDirection: 'row', borderBottom: '1px solid #E0E0E0',  minHeight: 90, padding: 20}}>
+            <div style={{ flex: 0.7, display: 'flex', flexDirection: 'column', overflowY: 'scroll', overflowX: 'hidden' }}>
+              <div style={{ display: 'flex', flex: 1, flexDirection: 'row', borderBottom: '1px solid #E0E0E0',  minHeight: 80, padding: 20}}>
                 
                 <div style={{display: 'flex', flex: 3, flexDirection: 'column' }}>
                   <div style={{display: 'flex', flex: 0.6, flexDirection: 'row'}}>
@@ -69,6 +74,7 @@ class Homepage extends React.Component {
                <div style={{ height: 300 }}>
                 <DiagnosisChart diagnosis={diagnosis} />
               </div>
+              <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', marginBottom: 5 }}>HCC Codes</h3>
               <div>
                 <Table />
               </div>

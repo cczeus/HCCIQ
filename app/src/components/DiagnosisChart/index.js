@@ -29,8 +29,7 @@ export default class DiagnosisChart extends React.Component {
 
 			data.push(newData)
 		}
-		console.log("IT IS");
-		console.log(data)
+
 	  	return (
 	    	<BarChart width={800} height={400} data={data}
 	            margin={{top: 5, right: 100, left: 0, bottom: 5}}>
