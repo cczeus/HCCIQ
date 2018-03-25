@@ -12,6 +12,7 @@ import './App.css';
 
 
 import Homepage from './containers/Homepage';
+import LoginScreen from './containers/Loginpage';
 
 
 const createStoreWithMiddleware = applyMiddleware(

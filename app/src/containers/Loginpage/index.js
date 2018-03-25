@@ -12,13 +12,15 @@ class LoginScreenContainer extends React.Component {
   render() {
     return (
         <div>
-            <h1 style={{paddingLeft: '5%'}}>DiagnosisIQ</h1>
-            <h1 style={{textAlign: 'center', marginTop: '200px'}}>Physician Portal</h1>
+            <div style={{ border: '1px solid #E0E0E0', paddingLeft: 20, paddingRight: 20, height: 65, display: 'flex', flexDirection: 'row' }}>
+                <p style={{ color: '#757575', fontWeight: 'light', fontSize: 21, flex: 1 }}>DiagnosisIQ</p>
+            </div>
+            <p style={{fontSize: 32, textAlign: 'center', marginBottom: 10, marginTop: '200px', fontWeight: 'light'}}>Physician Portal</p>
             <form style={{textAlign: 'center'}}>
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '40%', margin: '0 auto'}}>
                     <label><b>Username:</b></label>
                     <input
-                        style={{ margin: '2%', padding: 10, width: '100%', height: 20, borderWidth: 0, backgroundColor: '#F7F8FC' }}
+                        style={{ margin: '2%', padding: 10, width: '100%', height: 20, borderWidth: 0, backgroundColor: '#F0F1F3', borderRadius: '4px' }}
                         value={this.state.userName}
                         onChangeText={(userName) => this.setState({userName})}
                         placeholder="Username" />
@@ -26,10 +28,10 @@ class LoginScreenContainer extends React.Component {
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '40%', margin: '0 auto'}}>
                     <label><b>Password:</b></label>
                     <input
-                        style={{ margin: '2%', padding: 10, width: '100%', height: 20, borderWidth: 0, backgroundColor: '#F7F8FC' }}
+                        style={{ margin: '2%', padding: 10, width: '100%', height: 20, borderWidth: 0, backgroundColor: '#F0F1F3', borderRadius: '4px' }}
                         value={this.state.password}
                         onChangeText={(password) => this.setState({password})}
-                        placeholder="Username"
+                        placeholder="Password"
                         type="password"
                         secureTextEntry={true} />
                 </div>
