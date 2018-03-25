@@ -41,23 +41,68 @@ var HCC = mongoose.model('HCCModel', HCCSchema);
 var h = new HCC({
   doctor: "DrPhil",
   timeOfVisit: Date.now(),
-  patient: "Matt Meserve",
-  imgURL: "http://niksingh.net/img/matt.jpg",
-  matches: ["weak", "sweat", "vomit"],
+  patient: "Jane Doe",
+  imgURL: "http://niksingh.net/img/Jane.jpg",
+  matches: ["sore", "throat", "headaches"],
   cost: "Low",
-  note: "His palms are sweaty, knees weak, arms are heavy. There's vomit on his sweater already, mom's spaghetti. He's nervous, but on the surface he looks calm and ready. To drop bombs, but he keeps on forgetting What he wrote down. the whole crowd goes so loud. He opens his mouth, but the words won't come out. He's chokin, how? Everybody's jokin now",
-  symptoms: [ 'Sweating', 'weakness', 'Vomiting' ],
+  note: "Paitent has a sore throat. Patient also experiences headaches",
+  symptoms: [ 'Sore throat', 'Headache' ],
   diagnosis: [{
-    name: "Anxiety Attack",
-    probability: 99.09
+    name: "Nasopharyngitis",
+    probability: 90
   },
   {
-    name: "Alcohol Poisoning",
-    probability: 89.27
-  }]
+    name: "Influenza",
+    probability: 64
+  },
+  {
+    name: "Common cold",
+    probability: 58
+  },
+  {
+    name: "Infectious mononucleosis",
+    probability: 10.9
+  }
+  ]
 });
 
 h.save((error) => {
   if (error) console.log(error);
   console.log("Success");
 });
+
+var obj = {
+      doctor: "DrPhil",
+      timeOfVisit: Date.now(),
+      patient: "John Doe",
+      imgURL: "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+      matches: ["type", "2", "diabetes", "chronic", "obstructive", "lung", "disease", "pneumonia", "infection", "cigarettes", "smoking", "copd"],
+      cost: "High",
+      note: "Patient has chronic obstructive lung disease and pneumonia infection. Patient has copd. Has been smoking cigarettes",
+      code: [{
+        code: "J44.0",
+        description: "Has current pneumonia infection (and has COPD)",
+        score: 0.563
+      },
+      {
+        code: "J44.9",
+        description: "Patient has copd",
+        score: 0.368
+      },
+      {
+        code: "Z57.22",
+        description: "Smokes cigarettes, tobacco",
+        score: 0.256
+      }],
+      symptoms: ["Shortness of breath", "Fatigue", "Lack of energy", "Blueness of the lips"],
+      diagnosis: [{
+        name: "Chronic obstructive lung disease",
+        probability: 80,
+      }]
+    };
+    var h = new HCC(obj);
+    h.save((error) => {
+     if (error) console.log(error);
+    console.log("Success");
+    })
+    return;

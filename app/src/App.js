@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
 import { createStore, applyMiddleware, combineReduxers, compose } from 'redux';
+import { Browser, Route, Switch, browserHistory, hashHistory, Router, HashRouter } from 'react-router-dom';
 import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 
@@ -32,7 +33,16 @@ class App extends Component {
   render() {
     return (
        <Provider store={store}>
-        <Homepage />
+       <HashRouter>
+        <Switch>
+          <Route 
+            exact path ="/"
+            component={LoginScreen} />
+            <Route 
+            exact path ="/home"
+            component={Homepage} />
+          </Switch>
+        </HashRouter>
        </Provider>
       
     );

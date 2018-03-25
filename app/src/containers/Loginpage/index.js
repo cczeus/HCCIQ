@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 
 class LoginScreenContainer extends React.Component {
   constructor() {
@@ -15,7 +15,7 @@ class LoginScreenContainer extends React.Component {
             <div style={{ border: '1px solid #E0E0E0', paddingLeft: 20, paddingRight: 20, height: 65, display: 'flex', flexDirection: 'row' }}>
                 <p style={{ color: '#757575', fontWeight: 'light', fontSize: 21, flex: 1 }}>DiagnosisIQ</p>
             </div>
-            <p style={{fontSize: 32, textAlign: 'center', marginBottom: 10, marginTop: '200px', fontWeight: 'light'}}>Physician Portal</p>
+            <p style={{ color:'#757575', fontWeight: '200', fontSize: 32, marginTop: 200, textAlign: 'center' }}>Log In</p>
             <form style={{textAlign: 'center'}}>
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '40%', margin: '0 auto'}}>
                     <label><b>Username:</b></label>
@@ -35,11 +35,13 @@ class LoginScreenContainer extends React.Component {
                         type="password"
                         secureTextEntry={true} />
                 </div>
-                <div onClick="" style={{color: 'white', display: 'flex', backgroundColor: '#4da6ff', height: '40px', alignItems: 'center', margin: '0 auto', width: '15%', textAlign: 'center', borderRadius: '5px', marginTop: '20px'}}>
-                    <div style={{margin: '0 auto'}}>
-                        Login
+                <Link to="/home" style={{ textDecoration: 'none' }}>
+                    <div onClick="" style={{color: 'white', display: 'flex', backgroundColor: '#4da6ff', height: '40px', alignItems: 'center', margin: '0 auto', width: '15%', textAlign: 'center', borderRadius: '5px', marginTop: '20px'}}>
+                        <div style={{margin: '0 auto'}}>
+                            Login
+                        </div>
                     </div>
-                </div>
+                </Link>
             </form>
         </div>
     );
