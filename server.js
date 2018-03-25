@@ -272,7 +272,7 @@ app.post('/note', (req, res) => {
 		// 	nlpData.push(data);
 		// });
 		// ls.on('close', () => {
-			cost = (Math.random() * 90000 + 10000).toFixed(2); // TODO: Actually generate a real cost
+			cost = "Low"; // TODO: Actually generate a real cost
 			console.log("DG is");
 			console.log(diagnosis);
 			var dg = diagnosis.map((dgs) => {

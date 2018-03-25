@@ -31,10 +31,12 @@ class Homepage extends React.Component {
     this.handleClickNote = this.handleClickNote.bind(this);
   }
   componentDidMount() {
+    console.log("IN MOUNT")
     this.props.dispatch(getNotes('DrPhil'))
-
   }
+
   componentWillReceiveProps(nextProps) {
+    console.log("IN NEXT PROPS")
     this.setState({
       notes: nextProps.doctor.doctor
     })
@@ -62,8 +64,8 @@ class Homepage extends React.Component {
     splitText.forEach((word) => {
       var matchB = false;
       matches.forEach((match) => {
-        console.log("WORD " + word.toLowerCase());
-        console.log("MATCH " + match.toLowerCase());
+        // console.log("WORD " + word.toLowerCase());
+        // console.log("MATCH " + match.toLowerCase());
         // console.log('----');
 
         var wordTemp = word;
@@ -86,6 +88,8 @@ class Homepage extends React.Component {
     this.props.dispatch(createNote(newNote));
     notes.push(newNote);
     this.setState({notes});
+    console.log("UPDATING")
+    this.componentDidMount();
 
   }
   handleClickNote(activeNoteIndex) {
