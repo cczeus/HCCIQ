@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import DataTables from 'material-ui-datatables';
 import ReactTable from 'react-table'
 import Modal from 'react-responsive-modal';
+import JsxParser from 'react-jsx-parser'
 
 import { test, getNotes, createNote } from '../../redux/actions';
 
@@ -22,19 +23,22 @@ class Homepage extends React.Component {
       open: false,
       firstName: '',
       lastName: '',
-      note: '',
+      note: [],
     }
     this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
     this.handleLastNameChange = this.handleLastNameChange.bind(this);
     this.handleNoteChange = this.handleNoteChange.bind(this);
+    this.handleClickNote = this.handleClickNote.bind(this);
   }
   componentDidMount() {
     this.props.dispatch(getNotes('DrPhil'))
+
   }
   componentWillReceiveProps(nextProps) {
     this.setState({
       notes: nextProps.doctor.doctor
     })
+
   }
 
 
@@ -46,14 +50,46 @@ class Homepage extends React.Component {
     this.setState({ open: false });
   };
 
+  getScannedText() {
+
+
+    const activeNote = this.state.notes[this.state.activeNoteIndex];
+
+    const matches = activeNote.matches.concat(activeNote.symptoms);
+    console.log(matches);
+    var splitText = activeNote.note.split(' ');
+    var str = ["<p style={{ paddingLeft: 20, color:'#757575', fontWeight: '200' }}>"];
+    splitText.forEach((word) => {
+      var matchB = false;
+      matches.forEach((match) => {
+        console.log("WORD " + word.toLowerCase());
+        console.log("MATCH " + match.toLowerCase());
+        // console.log('----');
+
+        var wordTemp = word;
+
+        // if(word.substring(word.length-1) === '.' || word.substring(word.length-1) === ',') wordTemp = wordTemp.slice(0, -1);
+        if(word.toLowerCase().includes(match.toLowerCase()))  matchB = true
+      })
+      if(matchB) {
+        str.push("<span style={{ color: '#4688F1', fontWeight: '400' }}>" + word + "</span>")
+      }
+      else       str.push(word)
+
+    })
+    str.push("</p>")
+    return str.join(" ");
+  }
   handleCreateNote(){
     const notes = this.state.notes;
-    console.log("NOTESSS")
-    console.log(notes);
     const newNote = {note: this.state.note, patient: this.state.firstName + ' ' + this.state.lastName, doctor: notes[0].doctor}
     this.props.dispatch(createNote(newNote));
     notes.push(newNote);
     this.setState({notes});
+
+  }
+  handleClickNote(activeNoteIndex) {
+    this.setState({activeNoteIndex});
   }
   handleFirstNameChange(event) {
     this.setState({firstName: event.target.value})
@@ -72,7 +108,18 @@ class Homepage extends React.Component {
     if(notes === undefined) return <div></div>
     if(notes.length === 0)  return <div></div>
     const activeNote = notes[this.state.activeNoteIndex];
-   
+    
+    var color = '#D9453D'
+    if(activeNote.cost === 'Medium') {
+      color = '#F3B32A';
+    }
+    else if(activeNote.cost === 'Low') {
+      color = '#4688F1';
+    }
+    var symptoms = activeNote.symptoms.join(", ");
+
+    const renderHCC = activeNote.code.length === 0 || !activeNote.code[0].code ? <p style={{ paddingLeft: 20, color:'#757575', fontWeight: '200' }}>No HCC codes</p> : <Table codes={activeNote.code} />;
+
     return (
         <div style={{  display: 'flex', flexDirection: 'column', flex: 1,  position: 'absolute', height: '100%', width: '100%', overflowX: 'none' }}>
           <div style={{ border: '1px solid #E0E0E0', paddingLeft: 20, paddingRight: 20, height: 65, display: 'flex', flexDirection: 'row' }}>
@@ -81,10 +128,10 @@ class Homepage extends React.Component {
             <AngleDown style={{ alignSelf: 'center', fontSize: 21 }} />
           </div>
           <div style={{ flexDirection: 'row', display: 'flex', flex: 1 }}>   
-            <div style={{ flex: 0.30, flexDirection: 'column', display: 'flex', borderRight: '2px solid #E0E0E0', paddingLeft: 20, paddingRight: 20 }}>
+            <div style={{ flex: 0.35, flexDirection: 'column', display: 'flex', borderRight: '2px solid #E0E0E0', paddingLeft: 20, paddingRight: 40, overflowY: 'hidden' }}>
               <div style={{ flexDirection: 'row', display: 'flex' }}>
                 <p style={{ color: '#757575', fontWeight: 'light', fontSize: 21, flex: 1 }}>Your Notes</p>
-                <div style={{ color: '#4688F1', fontWeight: 'light', fontSize: 18, display: 'flex', flexDirection: 'row' }} onClick = {this.onOpenModal}>
+                <div style={{ color: '#4688F1', fontWeight: 'light', fontSize: 18, display: 'flex', flexDirection: 'row', textAlign: 'right' }} onClick = {this.onOpenModal}>
                   <p style={{ alignSelf: 'center', fontSize: 16 }}>CREATE</p>
                 </div>
                 <div>
@@ -94,21 +141,22 @@ class Homepage extends React.Component {
                 notes.map((note, index) => {
                   const name = note.patient.split(' ');
                   return(
+                  <div style={{ margin: 0 }} key={index} onClick={() => {this.handleClickNote(index)}}>
                   <Note 
-                    key={index} 
                     firstName={name[0]} 
                     lastName={name[1]} 
                     imgURL={note.imgURL}
                     note={note.note}
                     cost={note.cost}
                     timeOfVisit={note.timeOfVisit}/>
+                  </div>
                   )
               })
             }
              
             </div>
             <div style={{ flex: 0.7, display: 'flex', flexDirection: 'column', overflowY: 'scroll', overflowX: 'hidden' }}>
-              <div style={{ display: 'flex', flex: 1, flexDirection: 'row',  minHeight: 80, padding: 20}}>
+              <div style={{ display: 'flex', flex: 1, flexDirection: 'row',  minHeight: 80, padding: 20, borderBottom: '1px solid #E0E0E0'}}>
                 
                 <div style={{display: 'flex', flex: 3, flexDirection: 'column' }}>
                   <div style={{display: 'flex', flex: 0.6, flexDirection: 'row'}}>
@@ -119,24 +167,25 @@ class Homepage extends React.Component {
                   </div>
                 </div>
 
-                <div style={{ flex: 1, flexDirection: 'row', textAlign: 'right', marginRight: 50 }}>
-                  <h1 style={{ color: '#4688F1', margin: 10}}>${activeNote.cost}</h1>
-                  <p style={{ color: '#BDBDBD', margin: 10 }} >Reimbursment</p>
+                <div style={{ flex: 1, flexDirection: 'row', textAlign: 'center', marginRight: 0 }}>
+                  <h1 style={{ color, margin: 10}}>{activeNote.cost}</h1>
+                  <p style={{ color: '#BDBDBD', margin: 10 }} >Risk</p>
                 </div>
               </div>
               <h1 style={{ paddingLeft: 20, color:'#757575', fontWeight: '300' }}>Diagnosis Report</h1>
-              <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', marginBottom: 5 }}>Doctors Note</h3>
-              <p style={{ paddingLeft: 20, color:'#757575', fontWeight: '200' }} >The patienf has <span style={{ color: '#4688F1', fontWeight: '400' }}>Type I Diabetes</span> as well as <span style={{ color: '#4688F1', fontWeight: '400' }}>numbness and tingling in the feet</span> The patienf feels soreness in the throat as well as pains in the stomach
-              The patienf feels soreness in the throat as well as pains in the stomach
-              {activeNote.note}</p>
-              <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', marginBottom: 5 }}>Detected Symptoms</h3>
-              <p style={{ paddingLeft: 20, color:'#757575', fontWeight: '200' }} >Sore throat, tingling in feet, abdominal pains</p>
-               <div style={{ height: 300 }}>
+              <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', marginBottom: 0 }}>Doctors Note</h3>
+               <JsxParser
+                  jsx={this.getScannedText()}
+                    />
+              <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', marginBottom: 0 }}>Detected Symptoms</h3>
+              <p style={{ paddingLeft: 20, color:'#757575', fontWeight: '200' }} >{symptoms} </p>
+               <div style={{ height: 300, marginTop: 20 }}>
+               <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', margin: 0, marginBottom: 20 }}>Diagnosis</h3>
                 <DiagnosisChart diagnosis={activeNote.diagnosis} />
               </div>
               <h3 style={{ paddingLeft: 20, color:'#757575', fontWeight: '400', marginBottom: 5 }}>HCC Codes</h3>
               <div>
-                <Table />
+               {renderHCC}
               </div>
              
             </div>

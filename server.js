@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
 
-const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5pa2hpbGVzaDIwMTBAbGl2ZS5jb20iLCJyb2xlIjoiVXNlciIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjMwNjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ZlcnNpb24iOiIyMDAiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL2xpbWl0IjoiOTk5OTk5OTk5IiwiaHR0cDovL2V4YW1wbGUub3JnL2NsYWltcy9tZW1iZXJzaGlwIjoiUHJlbWl1bSIsImh0dHA6Ly9leGFtcGxlLm9yZy9jbGFpbXMvbGFuZ3VhZ2UiOiJlbi1nYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvZXhwaXJhdGlvbiI6IjIwOTktMTItMzEiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL21lbWJlcnNoaXBzdGFydCI6IjIwMTgtMDMtMjQiLCJpc3MiOiJodHRwczovL3NhbmRib3gtYXV0aHNlcnZpY2UucHJpYWlkLmNoIiwiYXVkIjoiaHR0cHM6Ly9oZWFsdGhzZXJ2aWNlLnByaWFpZC5jaCIsImV4cCI6MTUyMTk0ODExMiwibmJmIjoxNTIxOTQwOTEyfQ.zr0WxevLpk3RJk4DMn4qMxwsnxMCqEs7JX2FbGMif_U";
+const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5pa2hpbGVzaDIwMTBAbGl2ZS5jb20iLCJyb2xlIjoiVXNlciIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjMwNjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ZlcnNpb24iOiIyMDAiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL2xpbWl0IjoiOTk5OTk5OTk5IiwiaHR0cDovL2V4YW1wbGUub3JnL2NsYWltcy9tZW1iZXJzaGlwIjoiUHJlbWl1bSIsImh0dHA6Ly9leGFtcGxlLm9yZy9jbGFpbXMvbGFuZ3VhZ2UiOiJlbi1nYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvZXhwaXJhdGlvbiI6IjIwOTktMTItMzEiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL21lbWJlcnNoaXBzdGFydCI6IjIwMTgtMDMtMjQiLCJpc3MiOiJodHRwczovL3NhbmRib3gtYXV0aHNlcnZpY2UucHJpYWlkLmNoIiwiYXVkIjoiaHR0cHM6Ly9oZWFsdGhzZXJ2aWNlLnByaWFpZC5jaCIsImV4cCI6MTUyMTk4OTUwOCwibmJmIjoxNTIxOTgyMzA4fQ.l0HeGUDvHqvhAwtIocqzc2sPgMubg_lbAuel9PCAvTA"
 
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/hcciq', (error) => {
@@ -40,6 +40,7 @@ var HCCSchema = new Schema({
     note: String,
     code: [{
 			code: String,
+			description: String,
 			score: Number
 		}],
     symptoms: [String],
@@ -171,6 +172,7 @@ function extrapolateSymptoms(note) {
 			}
 		});
 	});
+
 	return [names, ids, matches];
 }
 
@@ -228,7 +230,7 @@ app.post('/note', (req, res) => {
 			symptoms: ["Numbness of the foot", "Circulation Issues", "Foot Ulcers"],
 			diagnosis: [{
 				name: "Type 2 Diabetes",
-				probability: 1
+				probability: 100,
 			}]
 		};
 		var h = new HCC(obj);
@@ -246,7 +248,7 @@ app.post('/note', (req, res) => {
 	var diagnosis = [
 		{
 			name: "Heart Attack",
-			probability: 0.987654321
+			probability: 0.98764321
 		},
 		{
 			name: "Obesity",
@@ -271,10 +273,12 @@ app.post('/note', (req, res) => {
 		// });
 		// ls.on('close', () => {
 			cost = (Math.random() * 90000 + 10000).toFixed(2); // TODO: Actually generate a real cost
+			console.log("DG is");
+			console.log(diagnosis);
 			var dg = diagnosis.map((dgs) => {
 				return {
 					name: dgs.Issue.ProfName,
-					score: dgs.Issue.Accuracy
+					probability: dgs.Issue.Accuracy
 				}
 			});
 			var nlpData = beerMeTheCodes(dg);
@@ -288,7 +292,7 @@ app.post('/note', (req, res) => {
 				note: req.body.note,
 				code: nlpData,
 				symptoms: symptomsArray,
-				diagnosis: diagnosis
+				diagnosis: dg
 			}
 			var h = new HCC(obj);
 			h.save((error) => {
