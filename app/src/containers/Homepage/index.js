@@ -64,13 +64,13 @@ class Homepage extends React.Component {
     splitText.forEach((word) => {
       var matchB = false;
       matches.forEach((match) => {
-        // console.log("WORD " + word.toLowerCase());
-        // console.log("MATCH " + match.toLowerCase());
-        // console.log('----');
+        console.log("WORD " + word.toLowerCase());
+        console.log("MATCH " + match.toLowerCase());
+        console.log('----');
 
         var wordTemp = word;
 
-        // if(word.substring(word.length-1) === '.' || word.substring(word.length-1) === ',') wordTemp = wordTemp.slice(0, -1);
+        if(word.substring(word.length-1) === '.' || word.substring(word.length-1) === ',') wordTemp = wordTemp.slice(0, -1);
         if(word.toLowerCase().includes(match.toLowerCase()))  matchB = true
       })
       if(matchB) {
@@ -164,7 +164,7 @@ class Homepage extends React.Component {
                 
                 <div style={{display: 'flex', flex: 3, flexDirection: 'column' }}>
                   <div style={{display: 'flex', flex: 0.6, flexDirection: 'row'}}>
-                    <img src="http://niksingh.net/img/neel2.jpg" height={75} width={75} style={{ borderRadius: '50%' }} />
+                    <img src={activeNote.imgURL} height={75} width={75} style={{ borderRadius: '50%' }} />
                     <p style={{ paddingLeft: 10, fontSize: 21, color: '#424242', fontWeight: '400' }}>{activeNote.patient.split(' ')[1]}, {activeNote.patient.split(' ')[0]}</p>
                   </div>
                    <div style={{display: 'flex', flex: 0.6, flexDirection: 'row'}}>

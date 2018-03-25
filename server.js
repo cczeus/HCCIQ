@@ -16,7 +16,14 @@ app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
 
-const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5pa2hpbGVzaDIwMTBAbGl2ZS5jb20iLCJyb2xlIjoiVXNlciIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjMwNjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ZlcnNpb24iOiIyMDAiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL2xpbWl0IjoiOTk5OTk5OTk5IiwiaHR0cDovL2V4YW1wbGUub3JnL2NsYWltcy9tZW1iZXJzaGlwIjoiUHJlbWl1bSIsImh0dHA6Ly9leGFtcGxlLm9yZy9jbGFpbXMvbGFuZ3VhZ2UiOiJlbi1nYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvZXhwaXJhdGlvbiI6IjIwOTktMTItMzEiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL21lbWJlcnNoaXBzdGFydCI6IjIwMTgtMDMtMjQiLCJpc3MiOiJodHRwczovL3NhbmRib3gtYXV0aHNlcnZpY2UucHJpYWlkLmNoIiwiYXVkIjoiaHR0cHM6Ly9oZWFsdGhzZXJ2aWNlLnByaWFpZC5jaCIsImV4cCI6MTUyMTk4OTUwOCwibmJmIjoxNTIxOTgyMzA4fQ.l0HeGUDvHqvhAwtIocqzc2sPgMubg_lbAuel9PCAvTA"
+const imgURLs = {
+	'John Doe': "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+	'Jane Doe': "http://niksingh.net/img/Jane.jpg",
+	'Matt Meserve': "http://niksingh.net/img/matt2.jpg",
+	'Michael Thompson': "http://niksingh.net/img/shridhar.jpg"
+};
+
+const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5pa2hpbGVzaDIwMTBAbGl2ZS5jb20iLCJyb2xlIjoiVXNlciIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjMwNjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ZlcnNpb24iOiIyMDAiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL2xpbWl0IjoiOTk5OTk5OTk5IiwiaHR0cDovL2V4YW1wbGUub3JnL2NsYWltcy9tZW1iZXJzaGlwIjoiUHJlbWl1bSIsImh0dHA6Ly9leGFtcGxlLm9yZy9jbGFpbXMvbGFuZ3VhZ2UiOiJlbi1nYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvZXhwaXJhdGlvbiI6IjIwOTktMTItMzEiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL21lbWJlcnNoaXBzdGFydCI6IjIwMTgtMDMtMjQiLCJpc3MiOiJodHRwczovL3NhbmRib3gtYXV0aHNlcnZpY2UucHJpYWlkLmNoIiwiYXVkIjoiaHR0cHM6Ly9oZWFsdGhzZXJ2aWNlLnByaWFpZC5jaCIsImV4cCI6MTUyMTk5OTk0NCwibmJmIjoxNTIxOTkyNzQ0fQ.SSSykPrwFiLpaTpc9vfgQ3WhsOB2Zm1Bhq_-n62L7yE";
 
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/hcciq', (error) => {
@@ -153,7 +160,7 @@ function extrapolateSymptoms(note) {
 				if(match && ! names.includes(symptom.Name)) {
 					names.push(symptom.Name);
 					ids.push(symptom.ID);
-					matches.push(newMatches);
+					matches = matches.concat(newMatches);
 				}
 			} else {
 				var match = true;
@@ -167,7 +174,7 @@ function extrapolateSymptoms(note) {
 				if(match && ! names.includes(symptom.Name)) {
 					names.push(symptom.Name);
 					ids.push(symptom.ID);
-					matches.push(newMatches);
+					matches = matches.concat(newMatches);
 				}
 			}
 		});
@@ -203,7 +210,7 @@ app.post('/note', (req, res) => {
 			doctor: req.body.doctor,
 			timeOfVisit: Date.now(),
 			patient: req.body.patient,
-			imgURL: req.body.imgURL,
+			imgURL: imgURLs[req.body.patient],
 			matches: ["type", "2", "diabetes", "positive", "microalbumin", "circulation", "issues", "numbness", "feet", "foot", "ulcers"],
 			cost: "High",
 			note: "Patient has Type 2 Diabetes. The Patient is positive for Microalbumin and faces circulation issues. There is also numbness in the feet and foot ulcers.",
@@ -286,7 +293,7 @@ app.post('/note', (req, res) => {
 				doctor: req.body.doctor,
 				timeOfVisit: Date.now(),
 				patient: req.body.patient,
-				imgURL: req.body.img,
+				imgURL: imgURLs[req.body.patient],
 				matches: symptoms[2],
 				cost: cost,
 				note: req.body.note,
