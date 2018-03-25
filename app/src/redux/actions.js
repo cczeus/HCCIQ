@@ -1,12 +1,10 @@
 
-// Log in
 export function test(userName, password) {
 
   return (dispatch) => {
     console.log("OI");
     let request=new XMLHttpRequest();
     return new Promise(function(resolve, reject) {
-      console.log("OI@")
       request.open('GET', '/api/hello', true);
       request.setRequestHeader('Content-Type', 'application/JSON');
       request.send()
@@ -25,5 +23,84 @@ export function test(userName, password) {
       };
       // console.log(request.responseText);
     })
+  }
+}
+
+export function getNotes(doctorID) {
+
+  return (dispatch) => {
+    let request=new XMLHttpRequest();
+    return new Promise(function(resolve, reject) {
+      request.open('GET', '/getRequests/' + doctorID, true);
+      request.setRequestHeader('Content-Type', 'application/JSON');
+      request.send()
+      request.onreadystatechange = () => {
+        if (request.readyState === 4) {
+          // console.log(request.responseText)
+           if(request.responseText === 'error') {
+            reject("Failed to retrieve data");
+          }
+           else {
+              
+              resolve(JSON.parse(request.responseText));
+           }   
+        }
+      };
+    })
+    .then(json => {
+      dispatch(getNotesSuccess(json))
+    })
+  }
+}
+
+export function getNotesSuccess(data) {
+  console.log("DATA")
+  console.log(data);
+  return {
+    type: "FETCHING DOCTOR SUCCESS",
+    data,
+  }
+}
+
+
+
+export function createNote(note) {
+
+  return (dispatch) => {
+    let request=new XMLHttpRequest();
+    return new Promise(function(resolve, reject) {
+      request.open('GET', '/note' + doctorID, true);
+      request.setRequestHeader('Content-Type', 'application/JSON');
+      request.send(JSON.stringify({
+        note: note.note,
+        img: note.img_URL,
+        doctor: note.doctor,
+        patient: note.patient
+      }))
+      request.onreadystatechange = () => {
+        if (request.readyState === 4) {
+          // console.log(request.responseText)
+           if(request.responseText === 'error') {
+            reject("Failed to retrieve data");
+          }
+           else {
+              
+              resolve(JSON.parse(request.responseText));
+           }   
+        }
+      };
+    })
+    .then(json => {
+      dispatch(getNotesSuccess(json))
+    })
+  }
+}
+
+export function getNotesSuccess(data) {
+  console.log("DATA")
+  console.log(data);
+  return {
+    type: "FETCHING DOCTOR SUCCESS",
+    data,
   }
 }

@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
-import pittition from './pittition'
+import doctor from './doctor'
 
 const rootReducer = combineReducers({
-	pittition
+	doctor
 })
 
 export default rootReducer

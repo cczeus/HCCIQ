@@ -11,16 +11,50 @@ import Table from '../../components/Table';
 import { diagnosis } from '../../static.js';
 
 import AngleDown from 'react-icons/lib/fa/angle-down';
+import Modal from 'react-responsive-modal';
+
 
 
 class Homepage extends React.Component {
   constructor() {
     super();
     this.state = {
+      open: false,
+      firstName: '',
+      lastName: '',
+      note: '',
     }
+    this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
+    this.handleLastNameChange = this.handleLastNameChange.bind(this);
+    this.handleNoteChange = this.handleNoteChange.bind(this);
   }
   componentDidMount() {
     this.props.dispatch(test())
+  }
+
+
+  onOpenModal = () => {
+    this.setState({ open: true });
+  };
+ 
+  onCloseModal = () => {
+    this.setState({ open: false });
+  };
+
+  handleCreateNote(){
+    console.log(this.state.firstName);
+    console.log(this.state.lastName);
+    console.log(this.state.note);
+    
+  }
+  handleFirstNameChange(event) {
+    this.setState({firstName: event.target.value})
+  }
+  handleLastNameChange(event) {
+    this.setState({lastName: event.target.value})
+  }
+  handleNoteChange(event) {
+    this.setState({note: event.target.value})
   }
   // The relating to the formal aspect of art, emphasizing lines, colors, generalized or geometrical forms, etc., especially with reference to their relationship to one another.
     
@@ -31,13 +65,50 @@ class Homepage extends React.Component {
             <p style={{ color: '#757575', fontWeight: 'light', fontSize: 21, flex: 1 }}>DiagnosisIQ</p>
             <img src="http://niksingh.net/img/pic.jpg" height={40} width={40} style={{ borderRadius: '50%', alignSelf: 'center', marginRight: 5 }} />
             <AngleDown style={{ alignSelf: 'center', fontSize: 21 }} />
+            <input type="text" value="" />
           </div>
+
           <div style={{ flexDirection: 'row', display: 'flex', flex: 1 }}>   
             <div style={{ flex: 0.30, flexDirection: 'column', display: 'flex', borderRight: '2px solid #E0E0E0', paddingLeft: 20, paddingRight: 20 }}>
               <div style={{ flexDirection: 'row', display: 'flex' }}>
                 <p style={{ color: '#757575', fontWeight: 'light', fontSize: 21, flex: 1 }}>Your Notes</p>
-                <div style={{ color: '#4688F1', fontWeight: 'light', fontSize: 18, display: 'flex', flexDirection: 'row' }}>
+                <div style={{ color: '#4688F1', fontWeight: 'light', fontSize: 18, display: 'flex', flexDirection: 'row' }} onClick = {this.onOpenModal}>
                   <p style={{ alignSelf: 'center', fontSize: 16 }}>CREATE</p>
+
+                  
+                </div>
+                <div>
+                <Modal open={this.state.open} onClose={this.onCloseModal} little>
+                    <h2 style={{textAlign: 'center'}}>New Note</h2>
+                    <form>
+                        
+                      <div style={{flexDirection: 'column', display: 'flex'}}>
+                        
+                        <div style={{}}>
+                            <label>
+                                 First Name: 
+                                <input type="text" value={this.state.firstName} onChange={this.handleFirstNameChange} style={{width: 200}} />
+                          </label>
+                        </div>
+                        <div style={{marginTop: 25}}>
+                            <label>
+                                 Last Name:
+                                <input type="text" value={this.state.lastName} onChange={this.handleLastNameChange} style={{width: 200}} />
+                          </label>
+                        </div>
+                      <div style={{marginTop: 50}}>
+                        <label>
+                            <textarea value={this.state.note} onChange={this.handleNoteChange} placeholder="Notes" style={{height: 100, width: 300}}>
+                          
+                            </textarea>
+                        </label>
+                      </div>
+                      <div style={{marginTop: 50, width: 200, height: 60, backgroundColor: '#528AEA', margin: 'auto'}} onClick={() => {this.handleCreateNote(); this.onCloseModal()}}>
+                          <h3 style={{textAlign:'center', color: 'white', fontWeight: 100}}>Create Note</h3>
+                      </div>
+                      </div>
+                    </form>
+                </Modal>
                 </div>
                 <div>
                 </div>
