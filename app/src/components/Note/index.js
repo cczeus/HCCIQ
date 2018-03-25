@@ -21,20 +21,20 @@ export default class Note extends React.Component {
 	
 
 	render(){
-
+		const height = 125;
 		var head;
 		var deets;
 
 		if(this.state.hover){
 			 head = {
-				height: 150,
+				height,
 				width: '100%',
 			// border: 'solid',
 			
 				borderBottom: '1px solid #F2F2F2',
 			};
 			deets = {
-			height: 150,
+			height,
 			width: '35%',
 			// border: 'solid',
 			
@@ -44,14 +44,14 @@ export default class Note extends React.Component {
 			}else{
 
 				head = {
-					height: 150,
+					height,
 					width: '100%',
 					backgroundColor: '#e6e6e6',
 			
 					borderBottom: '1px solid #F2F2F2',
 				};
 				deets = {
-					height: 150,
+					height,
 					width: '35%',
 					// border: 'solid',
 					backgroundColor: '#e6e6e6',
@@ -63,16 +63,17 @@ export default class Note extends React.Component {
 			
 			<div style={{flexDirection: 'row', display: 'flex', flex: 1}} onMouseEnter={this.toggleOver} onMouseLeave={this.toggleOver}>
 				<div style={head} >
-					<div style={{flexDirection: 'row', display: 'flex', paddingLeft: 10}}>
-						<div style={{paddingTop:10}}>
-							<img src="http://niksingh.net/img/shridhar2.jpg" height="40" width="40" style={{borderRadius: '100%'}}/> 
+					<div style={{flexDirection: 'row', display: 'flex', paddingLeft: 10,}}>
+						<div style={{paddingTop:0, alignItems: 'flex-start'}}>
+							<img src={this.props.imgURL} height="40" width="40" style={{borderRadius: '100%'}}/> 
 						</div>
 						<div style={styles.name}>
-							<p style={{ fontWeight: '400' }}>Meserve, Matt</p>
+							<p style={{ fontWeight: '400', margin: 0 }}>{this.props.lastName}, {this.props.firstName}</p>
+							<p style={{ margin: 0, color:'#757575', fontWeight: '200' }}>3/4/2018, 3:15PM</p>
 						</div>
 					</div>
 					<div style = {styles.noteBox}>
-						<p style={{ margin: 0, color:'#757575', fontWeight: '200' }}>The relating to the formal aspect of art, emphasizing lines, colorsfie wjfoiejw foijew fiojewif jweoifj ewoijf oewij feowijf oiewjfoweijf eowijfeowijf weoijfijoewf..
+						<p style={{ margin: 0, color:'#757575', fontWeight: '200' }}>{this.props.note}
 						</p>
 						
 					</div>
@@ -83,12 +84,8 @@ export default class Note extends React.Component {
 				</div>
 				<div style={deets} onClick={() => {alert("hi")}}>
 					<div style = {styles.bottomBox}>
-						<div>
-							<p style = {styles.bottomText}>reimbursement</p>
-						</div>
-
 						<div style={{height: 50}}>
-							<p style = {styles.bottomCost}>$350.00</p>
+							<p style = {styles.bottomCost}>${this.props.cost}</p>
 						</div>
 					</div>
 				</div>
@@ -136,7 +133,7 @@ const styles = {
 		noteBox: {
 			width: '80%',
 			height: '45%',
-			paddingLeft: 40,
+			paddingLeft: 60,
 			overflow:'hidden',
 		    // wordWrap: 'break-word',
 			textOverflow: 'ellipsis',
@@ -163,6 +160,8 @@ const styles = {
 		 	color: 'gray',
 		 	fontSize: 15,
 		 	textAlign: 'center',
+		 	justifyContent: 'center',
+		 	alignItem: 'center'
 		 	// paddingBottom: 100
 		 },
 		 bottomCost: {
