@@ -42,11 +42,12 @@ module.exports = [
 	},
 	{
 		"ID": 15,
-		"Name": "Cough"
+		"Name": "Cough",
+
 	},
 	{
 		"ID": 207,
-		"Name": "Dizziness"
+		"Name": "Dizziness",
 	},
 	{
 		"ID": 244,
@@ -84,7 +85,8 @@ module.exports = [
 	},
 	{
 		"ID": 11,
-		"Name": "Fever"
+		"Name": "Fever",
+		"Words": "Feverish"
 	},
 	{
 		"ID": 57,
@@ -93,7 +95,8 @@ module.exports = [
 	},
 	{
 		"ID": 9,
-		"Name": "Headache"
+		"Name": "Headache",
+		"Words": "Headaches"
 	},
 	{
 		"ID": 45,

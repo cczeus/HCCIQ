@@ -24,6 +24,13 @@ export default class Note extends React.Component {
 		const height = 125;
 		var head;
 		var deets;
+		var color = '#D9453D'
+		if(this.props.cost === 'Medium') {
+			color = '#F3B32A';
+		}
+		else if(this.props.cost === 'Low') {
+			color = '#4688F1';
+		}
 
 		if(this.state.hover){
 			 head = {
@@ -82,10 +89,10 @@ export default class Note extends React.Component {
 
 					</div>
 				</div>
-				<div style={deets} onClick={() => {alert("hi")}}>
+				<div style={deets}>
 					<div style = {styles.bottomBox}>
-						<div style={{height: 50}}>
-							<p style = {styles.bottomCost}>${this.props.cost}</p>
+						<div style={{height: 125, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+							<p style = {{fontSize: 15, textAlign: 'center', color, fontSize: 20,}}>{this.props.cost}</p>
 						</div>
 					</div>
 				</div>
@@ -165,11 +172,7 @@ const styles = {
 		 	// paddingBottom: 100
 		 },
 		 bottomCost: {
-		 	fontSize: 15,
-
-		 	textAlign: 'center',
-		 	color: '#4da6ff',
-		 	fontSize: 20,
+		 	
 
 		 
 
