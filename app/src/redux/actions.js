@@ -63,7 +63,6 @@ export function getNotesSuccess(data) {
 }
 
 
-
 export function createNote(note) {
 
   return (dispatch) => {
