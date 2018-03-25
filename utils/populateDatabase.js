@@ -21,6 +21,7 @@ var HCCSchema = new Schema({
     timeOfVisit: Date,
     patient: String,
     imgURL: String,
+    matches: [String],
     cost: String,
     note: String,
     code: [{
@@ -41,6 +42,7 @@ var h = new HCC({
   timeOfVisit: Date.now(),
   patient: "Matt Meserve",
   imgURL: "http://niksingh.net/img/matt.jpg",
+  matches: ["weak", "sweat", "vomit"],
   cost: "100.01",
   note: "His palms are sweaty, knees weak, arms are heavy. There's vomit on his sweater already, mom's spaghetti. He's nervous, but on the surface he looks calm and ready. To drop bombs, but he keeps on forgetting What he wrote down. the whole crowd goes so loud. He opens his mouth, but the words won't come out. He's chokin, how? Everybody's jokin now",
   symptoms: [ 'Sweating', 'weakness', 'Vomiting' ],
