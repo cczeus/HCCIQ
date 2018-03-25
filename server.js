@@ -293,7 +293,7 @@ app.post('/note', (req, res) => {
 				doctor: req.body.doctor,
 				timeOfVisit: Date.now(),
 				patient: req.body.patient,
-				imgURL: req.body.img,
+				imgURL: imgURLs[req.body.patient],
 				matches: symptoms[2],
 				cost: cost,
 				note: req.body.note,
