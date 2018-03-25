@@ -7,12 +7,16 @@ const { spawn } = require('child_process');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const hcc_codes = require('./hcc_codes');
+
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
+
+const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5pa2hpbGVzaDIwMTBAbGl2ZS5jb20iLCJyb2xlIjoiVXNlciIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3NpZCI6IjMwNjkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ZlcnNpb24iOiIyMDAiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL2xpbWl0IjoiOTk5OTk5OTk5IiwiaHR0cDovL2V4YW1wbGUub3JnL2NsYWltcy9tZW1iZXJzaGlwIjoiUHJlbWl1bSIsImh0dHA6Ly9leGFtcGxlLm9yZy9jbGFpbXMvbGFuZ3VhZ2UiOiJlbi1nYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvZXhwaXJhdGlvbiI6IjIwOTktMTItMzEiLCJodHRwOi8vZXhhbXBsZS5vcmcvY2xhaW1zL21lbWJlcnNoaXBzdGFydCI6IjIwMTgtMDMtMjQiLCJpc3MiOiJodHRwczovL3NhbmRib3gtYXV0aHNlcnZpY2UucHJpYWlkLmNoIiwiYXVkIjoiaHR0cHM6Ly9oZWFsdGhzZXJ2aWNlLnByaWFpZC5jaCIsImV4cCI6MTUyMTk0ODExMiwibmJmIjoxNTIxOTQwOTEyfQ.zr0WxevLpk3RJk4DMn4qMxwsnxMCqEs7JX2FbGMif_U";
 
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/hcciq', (error) => {
@@ -45,6 +49,25 @@ var HCCSchema = new Schema({
 });
 
 var HCC = mongoose.model('HCCModel', HCCSchema);
+
+function getDiagnosis(ids, callback) {
+	const options = {
+		hostname: 'sandbox-healthservice.priaid.ch',
+		path: '/diagnosis?token=' + token + '&language=en-gb&format=json',
+		method: 'GET'
+	};
+
+	https.get(options, (res) => {
+		var str = ""
+		res.on('data', (d) => {
+			str += d;
+		});
+	
+		res.on('end', (e) => {
+			callback(JSON.parse(str));
+		});
+	});
+}
 
 //getSymptoms();
 function getSymptoms() {
@@ -143,6 +166,23 @@ function extrapolateSymptoms(note) {
 	return [names, ids];
 }
 
+function beerMeTheCodes(diagnoses) {
+	arr = [];
+	hcc_codes.forEach((code) => {
+		prob = 1;
+		diagnoses.forEach((diagnosis) => {
+			if(code.diagnoses.includes(diagnosis.name.toLowerCase())) {
+				prob *= diagnosis.probability;
+			}
+		});
+		arr.push([diagnosis.name.toLowerCase(), prob]);
+	});
+	arr.sort((f, s) => {
+		return s[1] - f[1];
+	});
+	return arr.slice(0, 5);
+}
+
 app.get('/', (req, res) => {
   
 });
@@ -150,41 +190,53 @@ app.get('/', (req, res) => {
 app.post('/note', (req, res) => {
 	var symptoms = extrapolateSymptoms(req.body.note);
 	var symptomsArray = symptoms[0];
-	var diagnosis = null; // TODO: Generate diagnosis from API, should be an array of objects of form {name: String, probability: Number}
-	fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
-    if(err) {
-        return console.log(err);
-    }
-	});
-	const ls = spawn('java', ['YIKES_@MATT_MESERVE_NLP_FILENAME.java', '/tmp/java_nlp_input']);
-	var nlpData = [];
-	ls.stdout.on('data', (data) => {
-		data = data.split(',');
-		data = {
-			code: data[0],
-			score: data[1]
+	var diagnosis = [
+		{
+			name: "Heart Attack",
+			probability: 0.987654321
+		},
+		{
+			name: "Obesity",
+			probability: 0.768654372
 		}
-		nlpData.push(data);
-	});
-	ls.on('close', () => {
-		cost = (Math.random() * 90000 + 10000).toFixed(2); // TODO: Actually generate a real cost
-		var obj = {
-			doctor: req.body.doctor,
-			timeOfVisit: Date.now(),
-			patient: req.body.patient,
-			imgURL: req.body.img,
-			cost: cost,
-			note: req.body.note,
-			code: nlpData,
-			symptoms: symptomsArray,
-			diagnosis: diagnosis
-		}
-		var h = new HCC(obj);
-		h.save((error) => {
-			if(error) res.send(error);
-      else res.send(obj);
+	]; // TODO: Generate diagnosis from API, should be an array of objects of form {name: String, probability: Number}
+	getDiagnosis(symptoms[1], (diagnosis) => {
+		fs.writeFile("/tmp/java_nlp_input", diagnosis.split('\n'), function(err) {
+			if(err) {
+					return console.log(err);
+			}
 		});
-		res.send(JSON.stringify(obj));
+		// const ls = spawn('java', ['YIKES_@MATT_MESERVE_NLP_FILENAME.java', '/tmp/java_nlp_input']);
+		// var nlpData = []; // ONCE MATT'S CODE WORKS
+		// ls.stdout.on('data', (data) => {
+		// 	data = data.split(',');
+		// 	data = {
+		// 		code: data[0],
+		// 		score: data[1]
+		// 	}
+		// 	nlpData.push(data);
+		// });
+		// ls.on('close', () => {
+			cost = (Math.random() * 90000 + 10000).toFixed(2); // TODO: Actually generate a real cost
+			var nlpData = beerMeTheCodes(diagnosis);
+			var obj = {
+				doctor: req.body.doctor,
+				timeOfVisit: Date.now(),
+				patient: req.body.patient,
+				imgURL: req.body.img,
+				cost: cost,
+				note: req.body.note,
+				code: nlpData,
+				symptoms: symptomsArray,
+				diagnosis: diagnosis
+			}
+			var h = new HCC(obj);
+			h.save((error) => {
+				if(error) res.send(error);
+				else res.send(obj);
+			});
+			res.send(JSON.stringify(obj));
+		//});
 	});
 });
 
