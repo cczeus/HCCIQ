@@ -197,7 +197,7 @@ app.get('/', (req, res) => {
 
 app.post('/note', (req, res) => {
 	if(req.body.note.includes("Diabetes")) {
-		res.send({
+		var obj = {
 			doctor: req.body.doctor,
 			timeOfVisit: Date.now(),
 			patient: req.body.patient,
@@ -230,7 +230,12 @@ app.post('/note', (req, res) => {
 				name: "Type 2 Diabetes",
 				probability: 1
 			}]
-		});
+		};
+		var h = new HCC(obj);
+		h.save((error) => {
+			if(error) res.send(error);
+			else res.send(obj);
+		})
 		return;
 	}
 	var symptoms = extrapolateSymptoms(req.body.note);
